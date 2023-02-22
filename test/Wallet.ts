@@ -1,6 +1,6 @@
 import { expect } from 'chai'
 import { ethers } from 'hardhat'
-import { Wallet } from '../typechain-types'
+import { contracts, Wallet } from '../typechain-types'
 
 describe('Wallet  ', function () {
     let wallet: Wallet
@@ -37,8 +37,21 @@ describe('Wallet  ', function () {
                 to: wallet.address,
                 value: 100,
             })
-            await wallet.withdraw(this.owner.address, 100)
-            expect(await ethers.provider.getBalance(wallet.address)).to.equal(0)
+            await wallet.withdraw(this.owner.address, 50)
+            expect(await ethers.provider.getBalance(wallet.address)).to.equal(50)
+        })
+    })
+
+    describe('Transactions', function () {
+        it('check', async function () {
+            let txs = await wallet.getTransactions()
+            expect(txs[0].from).to.be.equal(this.owner.address)
+            expect(txs[0].to).to.be.equal(wallet.address)
+            expect(txs[0].amount).to.be.equal(100)
+
+            expect(txs[1].to).to.be.equal(this.owner.address)
+            expect(txs[1].from).to.be.equal(wallet.address)
+            expect(txs[1].amount).to.be.equal(50)
         })
     })
 })
